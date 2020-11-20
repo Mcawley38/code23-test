@@ -12,9 +12,28 @@
         </div>
         <div v-if="deck.length" class="w-56 h-80 bg-red-500 m-auto">{{deck[0].value}}{{deck[0].suit}}</div>
         <div class="flex justify-between mt-4">
-            <a :disabled="!lives" @click="takeTurn(true)" href="#" class="px-5 py-3 rounded bg-green-400">High</a>
-            <a @click="resetGame" href="#" class="px-5 py-3 rounded bg-yellow-500 m-auto">Shuffle</a>
-            <a :disabled="!lives" @click="takeTurn(false)" href="#" class="px-5 py-3 rounded bg-blue-400">Low</a>
+            <button
+                    :disabled="!lives"
+                    @click="takeTurn(true)"
+                    class="px-5 py-3 rounded "
+                    :class="highButtonClasses"
+            >
+                High
+            </button>
+            <button
+                    @click="resetGame"
+                    class="px-5 py-3 rounded bg-yellow-500 m-auto"
+            >
+                Shuffle
+            </button>
+            <button
+                    :disabled="!lives"
+                    @click="takeTurn(false)"
+                    class="px-5 py-3 rounded"
+                    :class="lowButtonClasses"
+            >
+                Low
+            </button>
         </div>
     </main>
 </template>
@@ -34,6 +53,20 @@
         }),
         mounted(){
             this.getDeck()
+        },
+        computed: {
+          highButtonClasses(){
+              return {
+                  'bg-gray-400' : !this.lives,
+                  'bg-green-400' : this.lives,
+              }
+          },
+          lowButtonClasses(){
+              return {
+                  'bg-gray-400' : !this.lives,
+                  'bg-blue-400' : this.lives,
+              }
+          }
         },
         methods: {
             async getDeck() {
