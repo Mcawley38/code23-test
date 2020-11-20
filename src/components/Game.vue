@@ -25,7 +25,7 @@
         <div class="flex justify-between mt-4">
             <button
                     :disabled="!lives"
-                    @click="takeTurn(true)"
+                    @click="takeTurn(false)"
                     class="px-5 py-3 rounded "
                     :class="highButtonClasses"
             >
@@ -39,7 +39,7 @@
             </button>
             <button
                     :disabled="!lives"
-                    @click="takeTurn(false)"
+                    @click="takeTurn(true)"
                     class="px-5 py-3 rounded"
                     :class="lowButtonClasses"
             >
@@ -101,11 +101,15 @@
             },
             takeTurn(greater) {
                 const old_card = this.deck.shift()
-                this.deck.push(old_card)
 
-                this.oldGreaterThanNew(old_card) === greater
-                    ? this.incrementScore()
-                    : this.deductLife()
+                if(old_card.value !== this.deck[0].value){
+
+                    this.oldGreaterThanNew(old_card) === greater
+                        ? this.incrementScore()
+                        : this.deductLife()
+                }
+
+                this.deck.push(old_card)
             },
             oldGreaterThanNew(old_card) {
                 if (!isNaN(old_card.value)) {
@@ -113,11 +117,12 @@
                         ? parseInt(old_card.value) > parseInt(this.deck[0].value)
                         : this.deck[0].value === 'A' // Aces low
                 } else {
+                    console.log(1)
+
                     const suits = ['A', 'J', 'Q', 'K']// Aces low, kings high, index of values will represent order of precedence
 
                     const old_suit_val = Object.keys(suits).find(key => suits[key] === old_card.value),
                         new_suit_val = Object.keys(suits).find(key => suits[key] === this.deck[0].value)
-
 
                     return old_suit_val > new_suit_val
                 }
