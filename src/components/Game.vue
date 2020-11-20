@@ -10,9 +10,17 @@
         <div class="text-center text-gray-600 mb-4">
             Highscore: {{score.high_score}}
         </div>
-        <div v-if="deck.length" class="w-56 h-80 m-auto relative">
-            <img class="w-full h-full absolute" :src="this.deck[0].suit + '.png'" :alt="deck[0].suit"/>
-            <h2 class="text-3xl absolute">{{deck[0].value}}</h2>
+        <div v-if="deck.length" class="w-56 h-80 m-auto relative border border-black">
+            <img
+                    class="w-36 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                    :src="this.deck[0].suit + '.png'"
+                    :alt="deck[0].suit"
+            />
+            <h2
+                    class="text-6xl absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+            >
+                {{deck[0].value}}
+            </h2>
         </div>
         <div class="flex justify-between mt-4">
             <button
