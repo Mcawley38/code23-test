@@ -7,11 +7,11 @@
         <div class="text-center text-gray-600 mb-4">
             Highscore: {{score.high_score}}
         </div>
-        <div class="w-56 h-80 bg-red-500 m-auto"></div>
+        <div v-if="deck.length" class="w-56 h-80 bg-red-500 m-auto">{{deck[0].value}}{{deck[0].suit}}</div>
         <div class="flex justify-between mt-4">
-            <a class="px-5 py-3 rounded bg-green-400">High</a>
-            <a class="px-5 py-3 rounded bg-yellow-500 m-auto">Shuffle</a>
-            <a class="px-5 py-3 rounded bg-blue-400">Low</a>
+            <a @click="takeTurn(true)" href="#" class="px-5 py-3 rounded bg-green-400">High</a>
+            <a @click="resetGame" href="#" class="px-5 py-3 rounded bg-yellow-500 m-auto">Shuffle</a>
+            <a @click="takeTurn(false)" href="#" class="px-5 py-3 rounded bg-blue-400">Low</a>
         </div>
     </main>
 </template>
@@ -33,6 +33,10 @@
                 old: {},
             }
         }),
+        mounted(){
+            this.getDeck()
+            this.shuffle()
+        },
         methods: {
             getDeck() {
                 axios.get('https://higher-lower.code23.com/api/deck')
@@ -41,8 +45,6 @@
                     })
             },
             shuffle() {
-                this.resetGame();
-
                 for (let i = this.deck.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [this.deck[i], this.deck[j]] = [this.deck[j], this.deck[i]]
@@ -58,9 +60,12 @@
                 this.cards.old = this.deck.shift()
                 this.cards.new = this.deck[0]
 
+                this.deck.push(this.cards.old)
+
                 this.oldGreaterThanNew() === greater
                     ? this.incrementScore()
                     :this.deductLife()
+
             },
             oldGreaterThanNew() {
                 if (!isNaN(this.cards.old.value)) {
@@ -72,7 +77,9 @@
 
                     const old_suit_val = Object.keys(suits).find(key => suits[key] === this.cards.old.value),
                         new_suit_val = Object.keys(suits).find(key => suits[key] === this.cards.new.value)
+
                     console.log(old_suit_val, new_suit_val)
+
                     return old_suit_val > new_suit_val
                 }
             },
