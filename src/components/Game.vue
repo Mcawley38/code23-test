@@ -10,7 +10,10 @@
         <div class="text-center text-gray-600 mb-4">
             Highscore: {{score.high_score}}
         </div>
-        <div v-if="deck.length" class="w-56 h-80 bg-red-500 m-auto">{{deck[0].value}}{{deck[0].suit}}</div>
+        <div v-if="deck.length" class="w-56 h-80 m-auto relative">
+            <img class="w-full h-full absolute" :src="this.deck[0].suit + '.png'" :alt="deck[0].suit"/>
+            <h2 class="text-3xl absolute">{{deck[0].value}}</h2>
+        </div>
         <div class="flex justify-between mt-4">
             <button
                     :disabled="!lives"
@@ -51,22 +54,22 @@
                 current_score: 0,
             }
         }),
-        mounted(){
+        mounted() {
             this.getDeck()
         },
         computed: {
-          highButtonClasses(){
-              return {
-                  'bg-gray-400' : !this.lives,
-                  'bg-green-400' : this.lives,
-              }
-          },
-          lowButtonClasses(){
-              return {
-                  'bg-gray-400' : !this.lives,
-                  'bg-blue-400' : this.lives,
-              }
-          }
+            highButtonClasses() {
+                return {
+                    'bg-gray-400': !this.lives,
+                    'bg-green-400': this.lives,
+                }
+            },
+            lowButtonClasses() {
+                return {
+                    'bg-gray-400': !this.lives,
+                    'bg-blue-400': this.lives,
+                }
+            }
         },
         methods: {
             async getDeck() {
@@ -94,7 +97,7 @@
 
                 this.oldGreaterThanNew(old_card) === greater
                     ? this.incrementScore()
-                    :this.deductLife()
+                    : this.deductLife()
             },
             oldGreaterThanNew(old_card) {
                 if (!isNaN(old_card.value)) {
@@ -111,14 +114,14 @@
                     return old_suit_val > new_suit_val
                 }
             },
-            incrementScore(){
-                this.score.current_score ++
+            incrementScore() {
+                this.score.current_score++
 
                 (this.score.high_score < this.score.current_score)
                 && (this.score.high_score = this.score.current_score)
             },
-            deductLife(){
-                -- this.lives
+            deductLife() {
+                --this.lives
             }
         }
     }
