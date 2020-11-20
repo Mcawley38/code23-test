@@ -4,14 +4,17 @@
             <span>Score: {{score.current_score}}</span>
             <span>Lives:  {{lives}}<span></span></span>
         </div>
+        <div v-show="!lives" class="text-center text-gray-600 mb-4">
+            <span class="text-red-400 font-bold">YOU LOSE !!!!!</span>
+        </div>
         <div class="text-center text-gray-600 mb-4">
             Highscore: {{score.high_score}}
         </div>
         <div v-if="deck.length" class="w-56 h-80 bg-red-500 m-auto">{{deck[0].value}}{{deck[0].suit}}</div>
         <div class="flex justify-between mt-4">
-            <a @click="takeTurn(true)" href="#" class="px-5 py-3 rounded bg-green-400">High</a>
+            <a :disabled="!lives" @click="takeTurn(true)" href="#" class="px-5 py-3 rounded bg-green-400">High</a>
             <a @click="resetGame" href="#" class="px-5 py-3 rounded bg-yellow-500 m-auto">Shuffle</a>
-            <a @click="takeTurn(false)" href="#" class="px-5 py-3 rounded bg-blue-400">Low</a>
+            <a :disabled="!lives" @click="takeTurn(false)" href="#" class="px-5 py-3 rounded bg-blue-400">Low</a>
         </div>
     </main>
 </template>
@@ -23,25 +26,21 @@
         name: 'Game',
         data: () => ({
             deck: [],
-            lives: 0,
+            lives: 3,
             score: {
                 high_score: 0,
                 current_score: 0,
-            },
-            cards: {
-                new: {},
-                old: {},
             }
         }),
         mounted(){
             this.getDeck()
-            this.shuffle()
         },
         methods: {
-            getDeck() {
-                axios.get('https://higher-lower.code23.com/api/deck')
+            async getDeck() {
+                await axios.get('https://higher-lower.code23.com/api/deck')
                     .then(response => {
                         this.deck = response.data
+                        this.shuffle() // bit of a cheaty way to do i'll admit but i'm short on time
                     })
             },
             shuffle() {
@@ -52,33 +51,29 @@
             },
             resetGame() {
                 this.lives = 3
-                this.score = 0
+                this.score.current_score = 0
 
                 this.shuffle()
             },
             takeTurn(greater) {
-                this.cards.old = this.deck.shift()
-                this.cards.new = this.deck[0]
+                const old_card = this.deck.shift()
+                this.deck.push(old_card)
 
-                this.deck.push(this.cards.old)
-
-                this.oldGreaterThanNew() === greater
+                this.oldGreaterThanNew(old_card) === greater
                     ? this.incrementScore()
                     :this.deductLife()
-
             },
-            oldGreaterThanNew() {
-                if (!isNaN(this.cards.old.value)) {
-                    return !isNaN(this.cards.new.value)
-                        ? parseInt(this.cards.old.value) > parseInt(this.cards.new.value)
-                        : this.cards.new.value === 'A' // Aces low
+            oldGreaterThanNew(old_card) {
+                if (!isNaN(old_card.value)) {
+                    return !isNaN(this.deck[0].value)
+                        ? parseInt(old_card.value) > parseInt(this.deck[0].value)
+                        : this.deck[0].value === 'A' // Aces low
                 } else {
                     const suits = ['A', 'J', 'Q', 'K']// Aces low, kings high, index of values will represent order of precedence
 
-                    const old_suit_val = Object.keys(suits).find(key => suits[key] === this.cards.old.value),
-                        new_suit_val = Object.keys(suits).find(key => suits[key] === this.cards.new.value)
+                    const old_suit_val = Object.keys(suits).find(key => suits[key] === old_card.value),
+                        new_suit_val = Object.keys(suits).find(key => suits[key] === this.deck[0].value)
 
-                    console.log(old_suit_val, new_suit_val)
 
                     return old_suit_val > new_suit_val
                 }
