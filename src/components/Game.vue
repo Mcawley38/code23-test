@@ -1,15 +1,18 @@
 <template>
-    <main>
-        <div>
+    <main class="w-80 m-auto">
+        <div class="flex justify-between">
             <span>Score: {{score.current_score}}</span>
-            <span>Lives:  {{score.lives}}<span></span></span>
+            <span>Lives:  {{lives}}<span></span></span>
         </div>
-        <div>
-            {{score.high_score}}
+        <div class="text-center text-gray-600 mb-4">
+            Highscore: {{score.high_score}}
         </div>
-        <div class="w-56 h-56 bg-red-500"></div>
-        <a>High</a>
-        <a>low</a>
+        <div class="w-56 h-80 bg-red-500 m-auto"></div>
+        <div class="flex justify-between mt-4">
+            <a class="px-5 py-3 rounded bg-green-400">High</a>
+            <a class="px-5 py-3 rounded bg-yellow-500 m-auto">Shuffle</a>
+            <a class="px-5 py-3 rounded bg-blue-400">Low</a>
+        </div>
     </main>
 </template>
 
@@ -51,11 +54,11 @@
 
                 this.shuffle()
             },
-            takeTurn() {
+            takeTurn(greater) {
                 this.cards.old = this.deck.shift()
                 this.cards.new = this.deck[0]
 
-                this.oldGreaterThanNew()
+                this.oldGreaterThanNew() === greater
                     ? this.incrementScore()
                     :this.deductLife()
             },
