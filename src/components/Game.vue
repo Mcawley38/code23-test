@@ -24,6 +24,10 @@
             score: {
                 high_score: 0,
                 current_score: 0,
+            },
+            cards: {
+                new: {},
+                old: {},
             }
         }),
         methods: {
@@ -34,20 +38,49 @@
                     })
             },
             shuffle() {
+                this.resetGame();
+
                 for (let i = this.deck.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [this.deck[i], this.deck[j]] = [this.deck[j], this.deck[i]]
                 }
             },
             resetGame() {
-                this.lives = 3;
-                this.score = 0;
+                this.lives = 3
+                this.score = 0
 
-                this.shuffle();
+                this.shuffle()
             },
             takeTurn() {
-                const new_card = this.deck.splice(index, 1)[0]
+                this.cards.old = this.deck.shift()
+                this.cards.new = this.deck[0]
 
+                this.oldGreaterThanNew()
+                    ? this.incrementScore()
+                    :this.deductLife()
+            },
+            oldGreaterThanNew() {
+                if (!isNaN(this.cards.old.value)) {
+                    return !isNaN(this.cards.new.value)
+                        ? parseInt(this.cards.old.value) > parseInt(this.cards.new.value)
+                        : this.cards.new.value === 'A' // Aces low
+                } else {
+                    const suits = ['A', 'J', 'Q', 'K']// Aces low, kings high, index of values will represent order of precedence
+
+                    const old_suit_val = Object.keys(suits).find(key => suits[key] === this.cards.old.value),
+                        new_suit_val = Object.keys(suits).find(key => suits[key] === this.cards.new.value)
+                    console.log(old_suit_val, new_suit_val)
+                    return old_suit_val > new_suit_val
+                }
+            },
+            incrementScore(){
+                this.score.current_score ++
+
+                (this.score.high_score < this.score.current_score)
+                && (this.score.high_score = this.score.current_score)
+            },
+            deductLife(){
+                -- this.lives
             }
         }
     }
